@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; 
 import OtpModal from './OtpModal'; // Import your new OtpModal component
+import { CheckIcon } from '@heroicons/react/24/solid'; // Updated import for Heroicons v2
 
 const Register = () => {
   const {
@@ -13,31 +14,24 @@ const Register = () => {
 
   const password = watch("password");
   const email = watch("email");
-  const mobile = watch("mobile");
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
-  // Validate email and mobile number
+  // Validate email
   const isEmailValid = email && /\S+@\S+\.\S+/.test(email);
-  const isMobileValid = mobile && /^[0-9]{10}$/.test(mobile); // Ensure it's exactly 10 digits
 
-  // Enable button only when both email is valid and mobile number is exactly 10 digits
-  const isVerifyButtonDisabled = !(isEmailValid && isMobileValid);
-
-  // Debugging logs
-  console.log("Email Valid:", isEmailValid);
-  console.log("Mobile Valid:", isMobileValid);
-  console.log("Is Verify Button Disabled:", isVerifyButtonDisabled);
+  // Enable button only when email is valid
+  const isVerifyButtonDisabled = !isEmailValid;
 
   const onSubmit = (data) => {
     console.log("Form Data: ", data);
-    // Open the OTP modal when email/mobile are submitted
+    // Open the OTP modal when email is submitted
     setIsModalOpen(true);
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col md:flex-row h-screen">
       {/* Left Side - Form */}
-      <div className="w-1/2 flex items-center justify-center bg-white p-6">
+      <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-6">
         <div className="max-w-md w-full">
           <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -72,45 +66,17 @@ const Register = () => {
               {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
             </div>
 
-            {/* Mobile Number Field */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Mobile Number</label>
-              <input
-                {...register("mobile", {
-                  required: "Mobile number is required",
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: "Mobile number must be exactly 10 digits",
-                  },
-                  validate: (value) => {
-                    // Custom validation to ensure only numbers are allowed
-                    return /^[0-9]*$/.test(value) || "Mobile number must contain only digits";
-                  }
-                })}
-                placeholder="Enter your mobile number"
-                maxLength={10} // Limit input length to 10 digits
-                onChange={(e) => {
-                  // Allow only digits and limit to 10 characters
-                  const value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-digit characters
-                  if (value.length <= 10) {
-                    e.target.value = value; // Update input value
-                  }
-                }}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"
-              />
-              {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
-            </div>
-
-            {/* Verify Button */}
+            {/* Verify Email Button with Icon */}
             <button 
               type="button" 
               onClick={() => setIsModalOpen(true)} 
               disabled={isVerifyButtonDisabled} 
-              className={`w-full py-3 text-lg font-bold text-white rounded transition duration-300 ${
+              className={`flex items-center justify-center space-x-1 w-auto py-1 px-2 text-sm font-bold text-white rounded transition duration-300 ${
                 isVerifyButtonDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-700'
               }`}
             >
-              Verify
+              <CheckIcon className="w-4 h-4" aria-hidden="true" /> {/* Icon */}
+              <span>Verify Email</span>
             </button>
 
             {/* Password Field */}
@@ -176,7 +142,7 @@ const Register = () => {
 
       {/* Right Side - Image */}
       <div
-        className="w-1/2 bg-cover bg-no-repeat bg-center"
+        className="hidden md:block w-1/2 bg-cover bg-no-repeat bg-center"
         style={{
           backgroundImage: "url('https://images.pexels.com/photos/29484238/pexels-photo-29484238/free-photo-of-minimalist-indoor-plant-decor-with-modern-furniture.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')",
         }}
