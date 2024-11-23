@@ -1,12 +1,10 @@
 // src/Home.jsx
 import React, { useState } from 'react';
-// import ChangePasswordModal from './ChangePasswordModal'; // Import the Change Password Modal
+import ChangePasswordModal from './ChangePasswordModal'; // Import the Change Password Modal
 import Sidebar from './Sidebar'; // Import Sidebar
 
 const Home = () => {
-    // const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-    const [setIsModalOpen] = useState(false); // State to manage modal visibility
-
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State to manage sidebar visibility
 
     const handleChangePassword = () => {
@@ -30,7 +28,12 @@ const Home = () => {
 
                 <header className="flex items-center justify-between mb-4">
                     <h1 className="text-3xl font-bold">File Management Dashboard</h1>
-                    
+                    {/* <button 
+                        onClick={handleChangePassword} 
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Change Password
+                    </button> */}
                 </header>
 
                 {/* File Management Section */}
@@ -51,7 +54,8 @@ const Home = () => {
                     {/* Add more files/folders as needed */}
                 </div>
 
-        
+                {/* Change Password Modal */}
+                <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </div>
         </div>
     );
