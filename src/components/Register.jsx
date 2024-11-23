@@ -12,14 +12,21 @@ const Register = () => {
   } = useForm();
 
   const password = watch("password");
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-
-  // Watch email and mobile number fields
   const email = watch("email");
   const mobile = watch("mobile");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
-  // Enable button only when both email is filled and mobile number is exactly 10 digits
-  const isVerifyButtonDisabled = !(email && mobile && mobile.length === 10);
+  // Validate email and mobile number
+  const isEmailValid = email && /\S+@\S+\.\S+/.test(email);
+  const isMobileValid = mobile && /^[0-9]{10}$/.test(mobile); // Ensure it's exactly 10 digits
+
+  // Enable button only when both email is valid and mobile number is exactly 10 digits
+  const isVerifyButtonDisabled = !(isEmailValid && isMobileValid);
+
+  // Debugging logs
+  console.log("Email Valid:", isEmailValid);
+  console.log("Mobile Valid:", isMobileValid);
+  console.log("Is Verify Button Disabled:", isVerifyButtonDisabled);
 
   const onSubmit = (data) => {
     console.log("Form Data: ", data);
@@ -75,6 +82,10 @@ const Register = () => {
                     value: /^[0-9]{10}$/,
                     message: "Mobile number must be exactly 10 digits",
                   },
+                  validate: (value) => {
+                    // Custom validation to ensure only numbers are allowed
+                    return /^[0-9]*$/.test(value) || "Mobile number must contain only digits";
+                  }
                 })}
                 placeholder="Enter your mobile number"
                 maxLength={10} // Limit input length to 10 digits
