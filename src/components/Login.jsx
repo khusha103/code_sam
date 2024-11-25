@@ -4,16 +4,61 @@ import ForgotPasswordModal from './ForgotPasswordModal'; // Import your new Forg
 import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate for navigation
 
 const Login = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  // const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, setError } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
 
-  const onSubmit = (data) => {
-    console.log("Login Data: ", data);
-    // Handle login logic here (e.g., API call)
+  // const onSubmit = (data) => {
+  //   console.log("Login Data: ", data);
+  //   // Handle login logic here (e.g., API call)
     
-    // Assuming login is successful, navigate to home page
-    navigate("/home"); // Change "/home" to your actual home route
+  //   // Assuming login is successful, navigate to home page
+  //   navigate("/home"); // Change "/home" to your actual home route
+  // };
+
+  const onSubmit = async (data) => {
+    try {
+      setIsLoading(true);
+      
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Login failed');
+      }
+
+      // Store user data in localStorage or state management solution
+      localStorage.setItem('user', JSON.stringify(result.user));
+      
+      // Redirect based on user role
+      if (result.user.role === 'admin') {
+        // navigate('/admin-dashboard');
+        navigate('/home');
+      } else {
+        navigate('/home');
+      }
+
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('root', {
+        type: 'manual',
+        message: error.message || 'Invalid credentials'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

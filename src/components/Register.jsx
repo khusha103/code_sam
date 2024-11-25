@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; 
 import OtpModal from './OtpModal'; // Import your new OtpModal component
-import { CheckIcon } from '@heroicons/react/24/solid'; // Updated import for Heroicons v2
 
 const Register = () => {
   const {
@@ -19,14 +18,35 @@ const Register = () => {
   // Validate email
   const isEmailValid = email && /\S+@\S+\.\S+/.test(email);
 
-  // Enable button only when email is valid
-  const isVerifyButtonDisabled = !isEmailValid;
 
-  const onSubmit = (data) => {
-    console.log("Form Data: ", data);
-    // Open the OTP modal when email is submitted
-    setIsModalOpen(true);
+  const onSubmit = async (data) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        console.log(result.message);
+        alert('Registration successful!');
+        setIsModalOpen(true);//open to verify email
+             // Redirect to the login page
+      // window.location.href = '/login'; // Adjust this path as necessary
+      } else {
+        console.error(result.error);
+        alert(result.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
+  
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -65,19 +85,6 @@ const Register = () => {
               />
               {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
             </div>
-
-            {/* Verify Email Button with Icon */}
-            <button 
-              type="button" 
-              onClick={() => setIsModalOpen(true)} 
-              disabled={isVerifyButtonDisabled} 
-              className={`flex items-center justify-center space-x-1 w-auto py-1 px-2 text-sm font-bold text-white rounded transition duration-300 ${
-                isVerifyButtonDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-700'
-              }`}
-            >
-              <CheckIcon className="w-4 h-4" aria-hidden="true" /> {/* Icon */}
-              <span>Verify Email</span>
-            </button>
 
             {/* Password Field */}
             <div className="mb-4">
